@@ -6,6 +6,8 @@ write the command in the console/terminal based on the code editor you use
                for tkinter:pip install tkinter
 For uninstalling those libray replce the install word with uninstall and You are all done.
 
+if you are facing trouble with the first file then you can go with the second file provided.
+
 Tell me in the comment for any other ideas
 
 Thank You
