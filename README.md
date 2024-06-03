@@ -1,33 +1,48 @@
-Python Music Player
-This is a simple music player application built in Python using the Pygame and Tkinter libraries.
+# Simple Music Player
 
-Overview :
-This project implements a basic music player that allows users to select a directory containing audio files and play them using simple controls. The user interface is built using the Tkinter library, while the audio playback functionality is provided by the Pygame library.
+This repository contains a simple music player implemented in Python using the `tkinter` and `pygame` libraries. The music player allows users to play, stop, pause, and unpause songs from a selected directory.
 
-Features :
--> Browse and select a directory containing audio files.
--> Display a list of available songs in the selected directory.
--> Play, pause, resume, and stop playback of selected songs.
--> Display the currently playing song title.
+## Features
 
-Usage : 
-To use this music player, follow these steps:
--> Clone the repository to your local machine:
-         git clone https://github.com/your-username/python-music-player.git
--> Navigate to the project directory:
-         cd python-music-player
--> Install the required dependencies. You can install them using pip:
-         pip install pygame
-->Run the Python script:
-         python music_player.py
--> The application window will open, allowing you to browse and select a directory containing audio files.
--> Once a directory is selected, a list of available songs will be displayed.
--> Use the buttons to control playback (play, pause, stop, resume).
--> The currently playing song title will be displayed at the top of the window.
+- **Play Music**: Users can select a song from the playlist and play it.
+- **Stop Music**: Users can stop the currently playing song.
+- **Pause Music**: Users can pause the currently playing song.
+- **Unpause Music**: Users can unpause the paused song.
+- **Playlist**: Displays the list of songs available in the selected directory.
 
-Dependencies :
-This project relies on the following Python libraries:
-     -> Pygame: For audio playback.
-     ->Tkinter: For building the graphical user interface.
-You can install these dependencies using pip:
-     pip install pygame
+## Technologies Used
+
+- **Python**: The main programming language used for implementing the music player.
+- **tkinter**: Python library for creating GUI applications.
+- **pygame**: Python library for multimedia applications, used for playing music.
+
+## Usage
+
+1. Install Python on your system if not already installed.
+2. Install the required libraries: `tkinter` and `pygame`.
+3. Clone this repository to your local machine.
+4. Run the Python script (`music_player.py`).
+5. Select a directory containing your music files.
+6. Choose a song from the playlist and click on the buttons to control playback.
+
+## How to Contribute
+
+If you want to contribute to this project, you can:
+
+- Add new features such as volume control, shuffle, repeat, etc.
+- Improve the user interface and design.
+- Fix any bugs or issues.
+
+You can fork this repository, make changes, and then create a pull request. Your contributions are welcome!
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+[Subhrajeet Sikdar](https://github.com/SubhrajeetSikdar)
+
+## Acknowledgements
+
+The implementation of this music player is inspired by various resources and tutorials on Python programming, tkinter, and pygame libraries. Special thanks to the developers and educators who share their knowledge and expertise.
