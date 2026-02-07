@@ -165,7 +165,230 @@ tk.Button(btn_frame, text="NEXT >>", width=8, command=next_song).grid(row=1, col
 tk.Button(btn_frame, text="ADD SONGS", width=10, command=add_songs).grid(row=1, column=2, pady=5)
 
 shuffle_btn = tk.Button(btn_frame, text="SHUFFLE", width=10, bg="gray", command=toggle_shuffle)
-shuffle_btn.grid(row=1, column=3, pady=5)
+shuffle_btn.grid(row=1, column=3, pady=5)import pygame
+import tkinter as tk
+from tkinter import ttk, filedialog
+import os
+import random
+from mutagen.mp3 import MP3
+
+# -------------------- WINDOW --------------------
+root = tk.Tk()
+root.title("Pro Music Player")
+root.geometry("700x520")
+root.config(bg="#181818")
+
+# -------------------- STYLE --------------------
+style = ttk.Style()
+style.theme_use("clam")
+
+style.configure("TButton",
+                font=("Segoe UI", 11, "bold"),
+                padding=6)
+
+style.configure("TLabel",
+                background="#181818",
+                foreground="white",
+                font=("Segoe UI", 11))
+
+# -------------------- PYGAME --------------------
+pygame.init()
+pygame.mixer.init()
+
+songs = []
+current_index = 0
+shuffle_mode = False
+
+# -------------------- FUNCTIONS --------------------
+
+def add_songs():
+    global songs
+    new_songs = filedialog.askopenfilenames(filetypes=[("MP3 Files", "*.mp3")])
+    for song in new_songs:
+        songs.append(song)
+        playlist.insert(tk.END, os.path.basename(song))
+    status_var.set(f"Added {len(new_songs)} songs")
+
+
+def play_song():
+    global current_index
+    if not songs:
+        return
+
+    try:
+        current_index = playlist.curselection()[0]
+    except:
+        current_index = 0
+
+    song = songs[current_index]
+    pygame.mixer.music.load(song)
+    pygame.mixer.music.play()
+
+    song_name.set(os.path.basename(song))
+    status_var.set("Playing")
+    show_progress()
+    auto_next()
+
+
+def pause_song():
+    pygame.mixer.music.pause()
+    status_var.set("Paused")
+
+
+def resume_song():
+    pygame.mixer.music.unpause()
+    status_var.set("Resumed")
+
+
+def stop_song():
+    pygame.mixer.music.stop()
+    status_var.set("Stopped")
+    progress_label.config(text="0 / 0 sec")
+
+
+def next_song():
+    global current_index
+    if not songs:
+        return
+
+    if shuffle_mode:
+        current_index = random.randint(0, len(songs)-1)
+    else:
+        current_index = (current_index + 1) % len(songs)
+
+    playlist.selection_clear(0, tk.END)
+    playlist.selection_set(current_index)
+    playlist.activate(current_index)
+    play_song()
+
+
+def prev_song():
+    global current_index
+    if not songs:
+        return
+
+    current_index = (current_index - 1) % len(songs)
+    playlist.selection_clear(0, tk.END)
+    playlist.selection_set(current_index)
+    playlist.activate(current_index)
+    play_song()
+
+
+def set_volume(val):
+    pygame.mixer.music.set_volume(int(val)/100)
+
+
+def toggle_shuffle():
+    global shuffle_mode
+    shuffle_mode = not shuffle_mode
+    if shuffle_mode:
+        shuffle_btn.config(text="Shuffle: ON")
+    else:
+        shuffle_btn.config(text="Shuffle: OFF")
+
+
+# -------------------- SEARCH --------------------
+def search_song():
+    keyword = search_var.get().lower()
+    playlist.delete(0, tk.END)
+    for s in songs:
+        if keyword in os.path.basename(s).lower():
+            playlist.insert(tk.END, os.path.basename(s))
+
+
+# -------------------- PROGRESS --------------------
+def show_progress():
+    if pygame.mixer.music.get_busy():
+        try:
+            song = songs[current_index]
+            audio = MP3(song)
+            total = int(audio.info.length)
+            current = pygame.mixer.music.get_pos() // 1000
+            progress_label.config(text=f"{current} / {total} sec")
+        except:
+            pass
+        root.after(1000, show_progress)
+
+
+# -------------------- AUTO NEXT --------------------
+def auto_next():
+    if pygame.mixer.music.get_busy():
+        root.after(2000, auto_next)
+    else:
+        next_song()
+
+# -------------------- TOP FRAME --------------------
+top_frame = tk.Frame(root, bg="#181818")
+top_frame.pack(fill="x", pady=10)
+
+title = tk.Label(top_frame, text="🎧 PRO MUSIC PLAYER",
+                 font=("Segoe UI", 18, "bold"),
+                 bg="#181818", fg="cyan")
+title.pack()
+
+# Now playing
+song_name = tk.StringVar()
+song_name.set("No song playing")
+
+now_playing = tk.Label(root, textvariable=song_name,
+                       font=("Segoe UI", 14),
+                       bg="#181818", fg="white")
+now_playing.pack(pady=5)
+
+progress_label = tk.Label(root, text="0 / 0 sec",
+                          bg="#181818", fg="gray")
+progress_label.pack()
+
+# -------------------- SEARCH BAR --------------------
+search_frame = tk.Frame(root, bg="#181818")
+search_frame.pack(fill="x", padx=20, pady=5)
+
+search_var = tk.StringVar()
+search_entry = ttk.Entry(search_frame, textvariable=search_var, width=40)
+search_entry.pack(side="left", padx=5)
+
+ttk.Button(search_frame, text="Search", command=search_song).pack(side="left")
+ttk.Button(search_frame, text="Add Songs", command=add_songs).pack(side="right")
+
+# -------------------- PLAYLIST --------------------
+playlist = tk.Listbox(root, font=("Segoe UI", 12),
+                      bg="#202020", fg="lime",
+                      selectbackground="#404040")
+playlist.pack(fill="both", expand=True, padx=20, pady=10)
+
+# -------------------- CONTROLS --------------------
+controls = tk.Frame(root, bg="#181818")
+controls.pack()
+
+ttk.Button(controls, text="⏮ Prev", command=prev_song).grid(row=0, column=0, padx=5)
+ttk.Button(controls, text="▶ Play", command=play_song).grid(row=0, column=1, padx=5)
+ttk.Button(controls, text="⏸ Pause", command=pause_song).grid(row=0, column=2, padx=5)
+ttk.Button(controls, text="⏹ Stop", command=stop_song).grid(row=0, column=3, padx=5)
+ttk.Button(controls, text="⏭ Next", command=next_song).grid(row=0, column=4, padx=5)
+
+shuffle_btn = ttk.Button(root, text="Shuffle: OFF", command=toggle_shuffle)
+shuffle_btn.pack(pady=5)
+
+# -------------------- VOLUME --------------------
+vol_frame = tk.Frame(root, bg="#181818")
+vol_frame.pack(fill="x", padx=20)
+
+tk.Label(vol_frame, text="🔊 Volume", bg="#181818", fg="white").pack(anchor="w")
+
+volume = ttk.Scale(vol_frame, from_=0, to=100, orient="horizontal", command=set_volume)
+volume.set(70)
+volume.pack(fill="x")
+
+# -------------------- STATUS BAR --------------------
+status_var = tk.StringVar()
+status_var.set("Welcome to Pro Music Player")
+
+status = tk.Label(root, textvariable=status_var,
+                  bg="#101010", fg="white", anchor="w")
+status.pack(fill="x", side="bottom")
+
+root.mainloop()
+
 
 # Volume
 tk.Label(root, text="Volume", bg="#121212", fg="white").pack()
