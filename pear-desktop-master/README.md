@@ -312,11 +312,6 @@ pnpm start
 pnpm test
 ```
 
-Uses [Playwright](https://playwright.dev/) to test the app.
-
-## License
-
-MIT © [pear-devs](https://github.com/pear-devs/pear-desktop)
 
 ## FAQ
 
